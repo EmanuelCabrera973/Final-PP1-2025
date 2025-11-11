@@ -1,3 +1,57 @@
 from django.shortcuts import render
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.urls import reverse_lazy
+from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin 
+from django_filters.views import FilterView 
+
+from .models import Producto
+from .forms import ProductoForm
+from .filters import ProductoFilter
+
+
+class ProductoListView(LoginRequiredMixin, FilterView):
+    model = Producto
+    template_name = "productos/producto_list.html"
+    context_object_name = "productos"
+    filterset_class = ProductoFilter
+    paginate_by = 10
+
+
+class ProductoCreateView(LoginRequiredMixin, CreateView):
+    model = Producto
+    form_class = ProductoForm
+    template_name= "productos/producto_form.html"
+    success_url = reverse_lazy("productos:lista")
+
+    def form_valid(self,form):
+        messages.success(self.request, "producto creado Existosamente.")
+        return super().form_valid(form)
+    
+class ProductoUpdateView(LoginRequiredMixin, UpdateView):
+    model = Producto
+    form_class = ProductoForm
+    template_name = "productos/producto_form.html"
+    success_url = reverse_lazy("productos:lista")
+
+    def form_valid(self, form):
+        messages.success(self.request, "producto Actualizado Exitosamente.")
+        return super().form_valid(form)
+
+class ProductoDeleteView(LoginRequiredMixin, DeleteView):
+    model = Producto
+    template_name = "productos/producto_confirm_delete.html"
+    success_url = reverse_lazy("productos:lista")
+
+    def delete(self, request, *args, **kwargs):
+        messages.success(self.request, "Producto eliminado Exitosamente.")
+        return super().delete(request, *args, **kwargs)
+
+class ProductoDetailView(LoginRequiredMixin,DetailView):
+    model= Producto
+    template_name= "productos/producto_detail.html"
+    context_objet_name = "producto"
+
+   
 
 # Create your views here.

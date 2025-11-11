@@ -2,10 +2,14 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from django.views.generic import RedirectView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('allauth.urls')),
+    path("productos/", include("apps.productos.urls")),
+    #luego agrego clientes y ventas
+    path("", RedirectView.as_view(url="/productos/"), name = "home"),
     # Aquí agregaremos las URLs de nuestras apps después
 ]
 
