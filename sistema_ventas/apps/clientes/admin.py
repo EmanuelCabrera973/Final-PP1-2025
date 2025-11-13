@@ -3,7 +3,7 @@ from .models import Cliente
 
 @admin.register(Cliente)
 class ClienteAdmin(admin.ModelAdmin):
-    list_display = ["nombre_comleto", "numero_documento","email", "telefono", "activo"]
+    list_display = ["nombre_completo", "numero_documento","email", "telefono", "activo"]
     list_filter = ["activo","creado"]
     search_fields = ["nombre","apellido", "numero_documento","email"]
     list_editable = ["activo"]
@@ -14,11 +14,11 @@ class ClienteAdmin(admin.ModelAdmin):
             "fields":("nombre","apellido","numero_documento")
         }),
         ("contacto",{
-            "fields":("email","telefono","direccion")
+            "fields":("email","telefono","direccion"),
         }),
         ("Estado",{
-            "fields": ("activo",)
-        })
+            "fields": ("activo",),
+        }),
         ("Metadatos",{
             "fields":("creado","actualizado"),
             "classes":("collapse",)
