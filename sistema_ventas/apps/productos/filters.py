@@ -15,5 +15,5 @@ class ProductoFilter(django_filters.FilterSet):
     def filter_stock_bajo(self,queryset,name,value):
         if value:
             return queryset.filter(stock__lt=10)
-        return quetyset
+        return queryset
     
