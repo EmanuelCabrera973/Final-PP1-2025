@@ -2,7 +2,7 @@ from django.db import models
 from django.urls import reverse
 from django.core.validators import RegexValidator
 
-class Cliene(models.Model):
+class Cliente(models.Model):
     nombre = models.CharField(max_length=100, verbose_name="nombre")
     apellido = models.CharField(max_length=100, verbose_name="apellido")
 
