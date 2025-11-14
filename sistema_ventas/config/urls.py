@@ -10,6 +10,7 @@ urlpatterns = [
     path("productos/", include("apps.productos.urls")),
     path("clientes/", include("apps.clientes.urls")),
     path("", RedirectView.as_view(url="/productos/"), name = "home"),
+    path('ventas/', include('apps.ventas.urls')),
     # Aquí agregaremos las URLs de nuestras apps después
 ]
 

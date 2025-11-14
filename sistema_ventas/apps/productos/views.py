@@ -9,6 +9,18 @@ from .models import Producto
 from .forms import ProductoForm
 from .filters import ProductoFilter
 
+### para el jbascript ###
+from django.http import JsonResponse
+from .models import Producto
+
+def productos_json(request):
+    """API simple para obtener precios de productos"""
+    productos = Producto.objects.filter(activo=True).values('id', 'precio')
+    precios = {str(producto['id']): float(producto['precio']) for producto in productos}
+    return JsonResponse(precios)
+
+### para las vitas ###
+
 
 class ProductoListView(LoginRequiredMixin, FilterView):
     model = Producto
@@ -16,6 +28,7 @@ class ProductoListView(LoginRequiredMixin, FilterView):
     context_object_name = "productos"
     filterset_class = ProductoFilter
     paginate_by = 10
+
 
 
 class ProductoCreateView(LoginRequiredMixin, CreateView):

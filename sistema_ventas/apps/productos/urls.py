@@ -9,4 +9,5 @@ urlpatterns=[
     path("<int:pk>/editar/", views.ProductoUpdateView.as_view(), name="editar"),
     path("<int:pk>/eliminar/", views.ProductoDeleteView.as_view(), name="eliminar"),
     path("<int:pk>/", views.ProductoDetailView.as_view(), name="detalle"),
+    path('json/', views.productos_json, name='json'), 
 ]

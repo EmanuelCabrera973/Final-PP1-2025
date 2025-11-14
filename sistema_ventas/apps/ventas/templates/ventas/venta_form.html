@@ -1,0 +1,171 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Nueva Venta - Sistema de Ventas{% endblock %}
+
+{% block extra_css %}
+<style>
+    .formset-row {
+        border-bottom: 1px solid #dee2e6;
+        padding: 15px 0;
+        margin-bottom: 15px;
+    }
+    .formset-row:last-child {
+        border-bottom: none;
+    }
+    .delete-row {
+        margin-top: 32px;
+    }
+    .total-section {
+        background-color: #f8f9fa;
+        border-radius: 5px;
+        padding: 15px;
+        margin-top: 20px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h2 class="mb-0">
+                    <i class="fas fa-cash-register"></i> Nueva Venta
+                </h2>
+            </div>
+            <div class="card-body">
+                <form method="post" id="venta-form">
+                    {% csrf_token %}
+                    
+                    <!-- Información del Cliente -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h5><i class="fas fa-user"></i> Información del Cliente</h5>
+                            {{ form.cliente|as_crispy_field }}
+                        </div>
+                    </div>
+
+                    <!-- Items de Venta -->
+                    <h5><i class="fas fa-boxes"></i> Productos de la Venta</h5>
+                    <div id="formset-container">
+                        {{ formset.management_form }}
+                        
+                        {% for form in formset %}
+                        <div class="formset-row row align-items-end">
+                            <div class="col-md-5">
+                                {{ form.producto|as_crispy_field }}
+                            </div>
+                            <div class="col-md-3">
+                                {{ form.cantidad|as_crispy_field }}
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-control-label">Precio Unitario</label>
+                                <input type="text" class="form-control precio-unitario" readonly>
+                            </div>
+                            <div class="col-md-1 delete-row">
+                                {% if formset.can_delete %}
+                                    {{ form.DELETE|as_crispy_field }}
+                                {% endif %}
+                            </div>
+                            {% for hidden in form.hidden_fields %}
+                                {{ hidden }}
+                            {% endfor %}
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Botón para agregar más productos -->
+                    <div class="form-group">
+                        <button type="button" id="add-form" class="btn btn-outline-success btn-sm">
+                            <i class="fas fa-plus"></i> Agregar otro producto
+                        </button>
+                    </div>
+
+                    <!-- Total de la Venta -->
+                    <div class="total-section">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5>Total de la Venta: <span id="total-venta">$0.00</span></h5>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Botones de acción -->
+                    <div class="form-group mt-4">
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-check"></i> Confirmar Venta
+                        </button>
+                        <a href="{% url 'ventas:lista' %}" class="btn btn-secondary">
+                            <i class="fas fa-times"></i> Cancelar
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Precios de productos (se cargarán dinámicamente)
+    let preciosProductos = {};
+    
+    // Cargar precios de productos
+    function cargarPrecios() {
+        fetch('/productos/json/')
+            .then(response => response.json())
+            .then(data => {
+                preciosProductos = data;
+                actualizarPrecios();
+            })
+            .catch(error => console.error('Error:', error));
+    }
+    
+    // Actualizar precios cuando cambia un producto
+    function actualizarPrecios() {
+        document.querySelectorAll('.producto-select').forEach(select => {
+            const productoId = select.value;
+            const precioInput = select.closest('.formset-row').querySelector('.precio-unitario');
+            if (precioInput && preciosProductos[productoId]) {
+                precioInput.value = '$' + parseFloat(preciosProductos[productoId]).toFixed(2);
+            } else {
+                precioInput.value = '';
+            }
+        });
+        calcularTotal();
+    }
+    
+    // Calcular total de la venta
+    function calcularTotal() {
+        let total = 0;
+        document.querySelectorAll('.formset-row').forEach(row => {
+            const productoSelect = row.querySelector('.producto-select');
+            const cantidadInput = row.querySelector('.cantidad-input');
+            const deleteCheckbox = row.querySelector('input[type="checkbox"]');
+            
+            if (productoSelect && cantidadInput && !deleteCheckbox?.checked) {
+                const productoId = productoSelect.value;
+                const cantidad = parseInt(cantidadInput.value) || 0;
+                const precio = preciosProductos[productoId] || 0;
+                total += cantidad * precio;
+            }
+        });
+        document.getElementById('total-venta').textContent = '$' + total.toFixed(2);
+    }
+    
+    // Event listeners
+    document.addEventListener('change', function(e) {
+        if (e.target.classList.contains('producto-select') || 
+            e.target.classList.contains('cantidad-input')) {
+            actualizarPrecios();
+        }
+    });
+    
+    // Inicializar
+    cargarPrecios();
+});
+</script>
+{% endblock %}
