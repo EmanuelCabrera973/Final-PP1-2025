@@ -1,5 +1,33 @@
 import os
 from pathlib import Path
+from urllib.parse import urlparse
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+DATABASE_URL = os.environ.get('DATABASE_URL')
+
+if DATABASE_URL:
+    # Configuración para PostgreSQL en Docker
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': 'sistema_ventas',
+            'USER': 'ventas_user',
+            'PASSWORD': 'ventas_password',
+            'HOST': 'db',
+            'PORT': '5432',
+        }
+    }
+else:
+    # SQLite para desarrollo
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
+
+
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -27,6 +55,7 @@ INSTALLED_APPS = [
     'apps.productos',
     'apps.clientes',
     'apps.ventas',
+    'apps.core',
 ]
 
 MIDDLEWARE = [
@@ -87,14 +116,24 @@ TIME_ZONE = 'America/Argentina/Buenos_Aires'
 USE_I18N = True
 USE_TZ = True
 
+# Archivos estáticos
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [BASE_DIR / 'static']
-STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# Seguridad
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-clave-temporal')
+DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
+
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0']
+CSRF_TRUSTED_ORIGINS = ['http://localhost:8000', 'http://127.0.0.1:8000']
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
 
 # Django Allauth
 SITE_ID = 1
@@ -102,7 +141,20 @@ AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
     'allauth.account.auth_backends.AuthenticationBackend',
 ]
+
+# Configuración para solo LOGIN 
+ACCOUNT_LOGIN_ON_GET = False
+ACCOUNT_SESSION_REMEMBER = True
 ACCOUNT_EMAIL_VERIFICATION = 'none'
+ACCOUNT_EMAIL_REQUIRED = False
+ACCOUNT_USERNAME_REQUIRED = True
+ACCOUNT_AUTHENTICATION_METHOD = 'username'
+ACCOUNT_SIGNUP_ENABLED = False
+
 LOGIN_REDIRECT_URL = '/'
+ACCOUNT_LOGOUT_REDIRECT_URL = '/accounts/login/'
+
+# Redirigir a login cuando el usuario no esté autenticado
+LOGIN_URL = '/accounts/login/'
 # Crispy Forms
 CRISPY_TEMPLATE_PACK = 'bootstrap4'

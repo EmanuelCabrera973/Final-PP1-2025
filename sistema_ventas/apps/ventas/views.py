@@ -9,16 +9,17 @@ from django.db import transaction
 from .models import Venta, ItemVenta
 from .forms import VentaForm, ItemVentaFormSet
 from apps.productos.models import Producto
+from apps.core.mixins import VentasGroupRequiredMixin
 
 
-class VentaListView(LoginRequiredMixin, ListView):
+class VentaListView(VentasGroupRequiredMixin, ListView):
     model = Venta
     form_class = VentaForm
     template_name = "ventas/venta_list.html"
     context_object_name = "ventas"
     paginate_by = 10
 
-class VentaCreateView(LoginRequiredMixin, CreateView):
+class VentaCreateView(VentasGroupRequiredMixin, CreateView):
     model = Venta
     form_class = VentaForm
     template_name = 'ventas/venta_form.html'
@@ -79,7 +80,7 @@ class VentaCreateView(LoginRequiredMixin, CreateView):
                 return self.form_invalid(form)
 
 
-class VentaDetailView(LoginRequiredMixin, DetailView):
+class VentaDetailView(VentasGroupRequiredMixin, DetailView):
     model = Venta
     template_name = 'ventas/venta_detail.html'
     context_object_name = 'venta'

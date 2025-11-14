@@ -5,9 +5,11 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin 
 from django_filters.views import FilterView 
 
+
 from .models import Producto
 from .forms import ProductoForm
 from .filters import ProductoFilter
+from apps.core.mixins import StockGroupRequiredMixin
 
 ### para el jbascript ###
 from django.http import JsonResponse
@@ -22,7 +24,7 @@ def productos_json(request):
 ### para las vitas ###
 
 
-class ProductoListView(LoginRequiredMixin, FilterView):
+class ProductoListView(StockGroupRequiredMixin, FilterView):
     model = Producto
     template_name = "productos/producto_list.html"
     context_object_name = "productos"
@@ -31,7 +33,7 @@ class ProductoListView(LoginRequiredMixin, FilterView):
 
 
 
-class ProductoCreateView(LoginRequiredMixin, CreateView):
+class ProductoCreateView(StockGroupRequiredMixin, CreateView):
     model = Producto
     form_class = ProductoForm
     template_name= "productos/producto_form.html"
@@ -41,7 +43,7 @@ class ProductoCreateView(LoginRequiredMixin, CreateView):
         messages.success(self.request, "producto creado Existosamente.")
         return super().form_valid(form)
     
-class ProductoUpdateView(LoginRequiredMixin, UpdateView):
+class ProductoUpdateView(StockGroupRequiredMixin, UpdateView):
     model = Producto
     form_class = ProductoForm
     template_name = "productos/producto_form.html"
@@ -51,7 +53,7 @@ class ProductoUpdateView(LoginRequiredMixin, UpdateView):
         messages.success(self.request, "producto Actualizado Exitosamente.")
         return super().form_valid(form)
 
-class ProductoDeleteView(LoginRequiredMixin, DeleteView):
+class ProductoDeleteView(StockGroupRequiredMixin, DeleteView):
     model = Producto
     template_name = "productos/producto_confirm_delete.html"
     success_url = reverse_lazy("productos:lista")
@@ -60,7 +62,7 @@ class ProductoDeleteView(LoginRequiredMixin, DeleteView):
         messages.success(self.request, "Producto eliminado Exitosamente.")
         return super().delete(request, *args, **kwargs)
 
-class ProductoDetailView(LoginRequiredMixin,DetailView):
+class ProductoDetailView(StockGroupRequiredMixin,DetailView):
     model= Producto
     template_name= "productos/producto_detail.html"
     context_objet_name = "producto"

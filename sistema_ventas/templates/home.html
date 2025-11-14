@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+
+{% block title %}Inicio - Sistema de Ventas{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10 text-center">
+        <div class="jumbotron bg-light p-5 rounded">
+            <h1 class="display-4"><i class="fas fa-store"></i> Sistema de Ventas</h1>
+            <p class="lead">Bienvenido, <strong>{{ user.username }}</strong></p>
+            
+            {% if user.groups.all %}
+                <p class="text-muted">Grupo: 
+                    <span class="badge badge-primary">
+                        {{ user.groups.all.0.name }}
+                    </span>
+                </p>
+            {% endif %}
+            
+            <hr class="my-4">
+            
+            <div class="row mt-4">
+                <!-- Botones para Administradores -->
+                {% if user.is_superuser or user.groups.filter.name == 'administradores' %}
+                <div class="col-md-4 mb-3">
+                    <a href="{% url 'productos:lista' %}" class="btn btn-primary btn-lg btn-block p-3">
+                        <i class="fas fa-box fa-2x mb-2"></i><br>
+                        Productos
+                    </a>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <a href="{% url 'clientes:lista' %}" class="btn btn-success btn-lg btn-block p-3">
+                        <i class="fas fa-users fa-2x mb-2"></i><br>
+                        Clientes
+                    </a>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <a href="{% url 'ventas:lista' %}" class="btn btn-info btn-lg btn-block p-3">
+                        <i class="fas fa-shopping-cart fa-2x mb-2"></i><br>
+                        Ventas
+                    </a>
+                </div>
+                
+                <!-- Botones para Stock -->
+                {% elif user.groups.filter.name == 'stock' %}
+                <div class="col-md-6 mb-3">
+                    <a href="{% url 'productos:lista' %}" class="btn btn-primary btn-lg btn-block p-3">
+                        <i class="fas fa-box fa-2x mb-2"></i><br>
+                        Gestionar Productos
+                    </a>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="card border-warning">
+                        <div class="card-body">
+                            <i class="fas fa-info-circle fa-2x text-warning mb-2"></i><br>
+                            <strong>Solo acceso a productos</strong>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Botones para Ventas -->
+                {% elif user.groups.filter.name == 'ventas' %}
+                <div class="col-md-6 mb-3">
+                    <a href="{% url 'clientes:lista' %}" class="btn btn-success btn-lg btn-block p-3">
+                        <i class="fas fa-users fa-2x mb-2"></i><br>
+                        Gestionar Clientes
+                    </a>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <a href="{% url 'ventas:lista' %}" class="btn btn-info btn-lg btn-block p-3">
+                        <i class="fas fa-shopping-cart fa-2x mb-2"></i><br>
+                        Registrar Ventas
+                    </a>
+                </div>
+                
+                <!-- Usuarios sin grupo -->
+                {% else %}
+                <div class="col-md-12 mb-3">
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        Quien so vo? sali de la computadora
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

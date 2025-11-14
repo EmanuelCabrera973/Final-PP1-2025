@@ -6,9 +6,10 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
 
 from .models import Cliente
+from apps.core.mixins import VentasGroupRequiredMixin
 from .forms import ClienteForm
 
-class ClienteListView(LoginRequiredMixin, ListView):
+class ClienteListView(VentasGroupRequiredMixin, ListView):
     model = Cliente
     template_name = "clientes/cliente_list.html"
     context_object_name = "clientes"
@@ -27,7 +28,7 @@ class ClienteListView(LoginRequiredMixin, ListView):
             )
                 
         return queryset
-class ClienteCreateView(LoginRequiredMixin, CreateView):
+class ClienteCreateView(VentasGroupRequiredMixin, CreateView):
     model = Cliente
     form_class = ClienteForm
     template_name = "clientes/cliente_form.html"
@@ -38,7 +39,7 @@ class ClienteCreateView(LoginRequiredMixin, CreateView):
         messages.succes(self.request,"cliente Bien Creado")
         return super().form_valid(form)
     
-class ClienteUpdateView(LoginRequiredMixin, UpdateView):
+class ClienteUpdateView(VentasGroupRequiredMixin, UpdateView):
     model = Cliente
     form_class = ClienteForm
     template_name = "clientes/cliente_form.html"
@@ -48,7 +49,7 @@ class ClienteUpdateView(LoginRequiredMixin, UpdateView):
         messages.success(self.request, "Cliente Bien Actualizado")
         return super().form_valid(form)
     
-class ClienteDeleteView(LoginRequiredMixin, DeleteView ):
+class ClienteDeleteView(VentasGroupRequiredMixin, DeleteView ):
     models = Cliente
     template_name = "clientes/cliente_confirm_delete.html"
     success_url = reverse_lazy("clientes:lista")
@@ -57,7 +58,7 @@ class ClienteDeleteView(LoginRequiredMixin, DeleteView ):
         messages.success(self.request, "Cliente Bien Eliminado")
         return super().delete(request, *args, **kwargs)
     
-class ClienteDetailView(LoginRequiredMixin, DetailView):
+class ClienteDetailView(VentasGroupRequiredMixin, DetailView):
     model = Cliente
     template_name = "clientes/cliente_detail.html"
     context_object_name = "cliente"

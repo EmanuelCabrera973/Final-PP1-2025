@@ -1,0 +1,26 @@
+services:
+  db:
+    image: postgres:15
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: sistema_ventas
+      POSTGRES_USER: ventas_user
+      POSTGRES_PASSWORD: ventas_password
+
+  web:
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/app
+    environment:
+      DATABASE_URL: postgres://ventas_user:ventas_password@db:5432/sistema_ventas
+      SECRET_KEY: django-insecure-test-key-para-docker
+      DEBUG: "True"
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+
+volumes:
+  postgres_data:

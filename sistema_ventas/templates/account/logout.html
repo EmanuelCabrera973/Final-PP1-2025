@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block title %}Cerrar Sesión - Sistema de Ventas{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h2 class="mb-0 text-center">
+                    <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                </h2>
+            </div>
+            <div class="card-body text-center">
+                <p class="lead">¿Estás seguro de que deseas cerrar sesión?</p>
+                
+                <form method="post" action="{% url 'account_logout' %}">
+                    {% csrf_token %}
+                    {% if redirect_field_value %}
+                    <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}"/>
+                    {% endif %}
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-sign-out-alt"></i> Sí, cerrar sesión
+                    </button>
+                    <a href="{% url 'home' %}" class="btn btn-secondary">
+                        <i class="fas fa-times"></i> Cancelar
+                    </a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
