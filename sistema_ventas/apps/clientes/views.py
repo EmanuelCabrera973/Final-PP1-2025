@@ -36,7 +36,7 @@ class ClienteCreateView(VentasGroupRequiredMixin, CreateView):
 
 
     def form_valid(self,form):
-        messages.succes(self.request,"cliente Bien Creado")
+        messages.success(self.request,"cliente Bien Creado")
         return super().form_valid(form)
     
 class ClienteUpdateView(VentasGroupRequiredMixin, UpdateView):
